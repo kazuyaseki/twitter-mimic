@@ -1,0 +1,5 @@
+.Home {
+  & .title {
+    color: #00f;
+  }
+}
