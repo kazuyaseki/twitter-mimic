@@ -15,6 +15,7 @@
     "test:cover": "nyc --reporter=lcov --reporter=text yarn test"
   },
   "dependencies": {
+    "axios": "^0.17.1",
     "firebase": "^4.6.2",
     "history": "^4.6.1",
     "react": "^15.4.2",
@@ -25,7 +26,8 @@
     "react-router-redux": "^4.0.8",
     "redux": "^3.6.0",
     "redux-logger": "^2.8.2",
-    "redux-promise": "^0.5.3"
+    "redux-promise": "^0.5.3",
+    "twitter": "^1.7.1"
   },
   "devDependencies": {
     "@mizchi/babel-preset": "^1.0.1",

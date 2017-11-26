@@ -1,5 +1,19 @@
 .Home {
   & .title {
-    color: #00f;
-  }
+    color: #fff;
+  }    
+}
+
+.Layout {
+}
+
+.navigation {
+  background-color: #fff;
+  padding: 15px 10px;
+  margin: 0px;
+}
+.main {
+  background-color: #e6ecf0;
+  width: 100%;
+  height: 100%;
 }
