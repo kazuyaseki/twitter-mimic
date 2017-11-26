@@ -1,18 +1,28 @@
 /* @flow */
 import { connect } from 'react-redux'
 import React from 'react'
-import type { Dispatcher, Connector } from '../types'
-import type {Action, State} from '../reducers/home-reducer'
 import Home from '../components/Home'
+import { updateTweets } from "../reducers"
 
 function HomeContainer (
-  props: State & Dispatcher<Action>
+  props
 ) {
   return (
     <Home {...props} />
   )
 }
 
-const connector: Connector<{}, State, Action> = connect(({ home }) => home)
+const mapStateToProps = (state) => {
+  return {
+    tweets: state.tweets
+  }
+}
+const mapDispatchToProps = (dispatch) => { 
+  return {
+    updateTweets: tweets => { dispatch({type: 'UPDATE_TWEETS', newTweets: tweets}) }
+  }
+}
+
+const connector = connect(mapStateToProps, mapDispatchToProps)
 
 export default connector(HomeContainer)

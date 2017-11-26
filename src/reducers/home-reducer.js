@@ -1,5 +1,8 @@
-/* @flow */
-export type Action = void
-export type State = {}
-
-export default (s: State = {}) => s
+export const tweets = (state = [], action) => {
+  switch (action.type) {
+    case 'UPDATE_TWEETS':
+      return action.newTweets;
+    default:
+      return state;
+  }
+}

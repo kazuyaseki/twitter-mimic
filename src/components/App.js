@@ -7,7 +7,7 @@ import Layout from './Layout'
 import NotFound from './NotFound'
 
 export default function App (
-  _props: {}
+  _props
 ) {
   return (
     <BrowserRouter history={history}>

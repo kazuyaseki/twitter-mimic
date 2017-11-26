@@ -29,13 +29,6 @@ const urlRegex = new RegExp(/(https?:\/\/\S+)/g);
 
 export default class Home extends React.Component {
 
-  constructor(){
-    super();
-    this.state = {
-      tweets: []
-    };
-  }
-
   componentDidMount(){
     let loadLinkedTweets = this.loadLinkedTweets.bind(this);
     auth.onAuthStateChanged(function(user) {
@@ -68,7 +61,7 @@ export default class Home extends React.Component {
       Axios.get(addQueryParam(twitterAPIUrl, twitterQueryParamFactory(tokens.token, tokens.secret, 'statuses/user_timeline')))
     ]).then(function (response) {
       let newTweets = response[0].data.concat(response[1].data).filter((tweet) => {return tweet.text.match(urlRegex)});
-      self.setState({ tweets: newTweets });
+      self.props.updateTweets(newTweets);
     })
   }
 
@@ -90,10 +83,10 @@ export default class Home extends React.Component {
     return <div className={styles.Home}>
       <button onClick={this.loadLinkedTweets.bind(this)}>reload</button>
       <ul>  
-        {this.state.tweets.map((tweet) => {
+        {this.props.tweets.map((tweet, index) => {
           let linkUrl = tweet.text.match(urlRegex)[0];
 
-          return (<li>
+          return (<li key={index}>
               <p>{tweet.text}</p>
               <a href={linkUrl} target="_blank">{linkUrl}</a>
             </li>
