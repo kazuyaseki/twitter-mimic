@@ -28,6 +28,26 @@ const twitterQueryParamFactory = (key, secret, url) => {
 const twitterAPIUrl = "https://us-central1-hello-firebase-26b50.cloudfunctions.net/execute";
 const urlRegex = new RegExp(/(https?:\/\/\S+)/g); 
 
+const Link = ({
+  active,
+  children,
+  onClick
+}) => {
+  if(active){
+    return <span>{children}</span>;
+  }
+  return (
+    <a href="#"
+      onClick={e => {
+        e.preventDefault();
+        onClick();
+      }}
+    >
+      {children}
+    </a>
+  )
+}
+
 export default class Home extends React.Component {
 
   componentDidMount(){
@@ -80,8 +100,8 @@ export default class Home extends React.Component {
 
   signIn() {
     auth.signInWithPopup(twitterAuthProvider).then(function(result) {
-      var token = result.credential.accessToken;
-      var secret = result.credential.secret;
+      let token = result.credential.accessToken;
+      let secret = result.credential.secret;
 
       localStorage.setItem("twitter:tokens", JSON.stringify({
         token,
@@ -93,7 +113,16 @@ export default class Home extends React.Component {
   }
 
   render (){
+    const onClickLink = (filter) => {
+      this.props.setVisibilityFilter(filter);
+    }
+
     return <div className={styles.Home}>
+      <div>
+       <Link active={this.props.filter === 'SHOW_ALL'} onClick={() => onClickLink('SHOW_ALL')}>全て</Link>{" "}
+       <Link active={this.props.filter === 'SHOW_UNREAD'} onClick={() => onClickLink('SHOW_UNREAD')}>未読</Link>{" "}
+       <Link active={this.props.filter === 'SHOW_READ'} onClick={() => onClickLink('SHOW_READ')}>既読</Link>
+      </div>
       <button onClick={this.loadLinkedTweets.bind(this)}>reload</button>
       <ul>  
         {this.props.tweets.map((tweet, index) => {
