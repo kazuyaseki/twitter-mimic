@@ -11,30 +11,32 @@ function HomeContainer (
   )
 }
 
-const getVisibleTweets = (tweets, filter) => {
+const getVisibleTweets = (tweets, filter, readTweets) => {
   switch (filter) {
     case 'SHOW_ALL':
       return tweets;
     case 'SHOW_UNREAD':
       return tweets.filter(
-        t => !t.read
+        t => !readTweets.includes(t.id.toString())
       );
     case 'SHOW_READ':
       return tweets.filter(
-        t => t.read
+        t => readTweets.includes(t.id.toString())
       );
   }
 }
 
 const mapStateToProps = (state) => {
   return {
-    tweets: getVisibleTweets(state.tweets, state.visibilityFilter),
+    tweets: getVisibleTweets(state.tweets, state.visibilityFilter, state.readTweets),
+    readTweets: state.readTweets,
     filter: state.visibilityFilter
   }
 }
 const mapDispatchToProps = (dispatch) => { 
   return {
     updateTweets: tweets => { dispatch({type: 'UPDATE_TWEETS', newTweets: tweets}) },
+    updateReadTweets: readTweets => { dispatch({type: 'UPDATE_READ_TWEETS', readTweets}) },
     setVisibilityFilter: filter => { dispatch({type: 'SET_VISIBILITY_FILTER', filter }) }
   }
 }

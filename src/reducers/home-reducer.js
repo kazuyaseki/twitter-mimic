@@ -7,6 +7,15 @@ export const tweets = (state = [], action) => {
   }
 }
 
+export const readTweets = (state = [], action) => {
+  switch (action.type) {
+    case 'UPDATE_READ_TWEETS':
+      return action.readTweets;
+    default:
+      return state;
+  }
+}
+
 export const visibilityFilter = (state = 'SHOW_ALL', action) => {
   switch (action.type) {
     case 'SET_VISIBILITY_FILTER':

@@ -4,7 +4,7 @@ import React from 'react'
 import styles from './styles.css'
 import moment from 'moment';
 
-import { auth, twitterAuthProvider } from '../firebase';
+import { auth, database, twitterAuthProvider } from '../firebase';
 
 const addQueryParam = (url, params) => {
   url += "?";
@@ -25,6 +25,7 @@ const twitterQueryParamFactory = (key, secret, url) => {
   }
 }
 
+const readTweetsRef = database.ref('read-tweets/');
 const twitterAPIUrl = "https://us-central1-hello-firebase-26b50.cloudfunctions.net/execute";
 const urlRegex = new RegExp(/(https?:\/\/\S+)/g); 
 
@@ -71,6 +72,11 @@ export default class Home extends React.Component {
           console.log(error);
         });
       }
+    });
+
+    const props = this.props;
+    readTweetsRef.on('value', function(snapshot) {
+      props.updateReadTweets(snapshot.val());
     });
   }
 
