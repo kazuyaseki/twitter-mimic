@@ -118,6 +118,12 @@ export default class Home extends React.Component {
     });
   }
 
+  markAsRead(e) {
+    const readTweets = this.props.readTweets;
+    readTweets.push(e.target.value);
+    readTweetsRef.set(readTweets);
+  }
+
   render (){
     const onClickLink = (filter) => {
       this.props.setVisibilityFilter(filter);
@@ -139,6 +145,7 @@ export default class Home extends React.Component {
               <p>{tweet.text}</p>
               <p>{date.format("YYYY年 MM月DD日")}</p>
               <a href={linkUrl} target="_blank">{linkUrl}</a>
+              <button onClick={this.markAsRead.bind(this)} value={tweet.id}>既読にする</button>
             </li>
           )    
         })}
