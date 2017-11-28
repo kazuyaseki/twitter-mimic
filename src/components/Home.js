@@ -128,6 +128,7 @@ export default class Home extends React.Component {
     const onClickLink = (filter) => {
       this.props.setVisibilityFilter(filter);
     }
+    const readTweets = this.props.readTweets;
 
     return <div className={styles.Home}>
       <div>
@@ -140,12 +141,15 @@ export default class Home extends React.Component {
         {this.props.tweets.map((tweet, index) => {
           let linkUrl = tweet.text.match(urlRegex)[0];
           let date = moment(tweet.created_at);
+          let isRead = readTweets.includes(tweet.id.toString());
+
+          const readButton = isRead ? "" : <button onClick={this.markAsRead.bind(this)} value={tweet.id}>既読にする</button>;
 
           return (<li key={index}>
               <p>{tweet.text}</p>
               <p>{date.format("YYYY年 MM月DD日")}</p>
               <a href={linkUrl} target="_blank">{linkUrl}</a>
-              <button onClick={this.markAsRead.bind(this)} value={tweet.id}>既読にする</button>
+              {readButton}
             </li>
           )    
         })}
