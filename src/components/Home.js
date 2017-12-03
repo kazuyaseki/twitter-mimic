@@ -60,30 +60,28 @@ export default class Home extends React.Component {
     const onClickLink = (filter) => {
       this.props.setVisibilityFilter(filter);
     };
-    const readTweets = this.props.readTweets;
 
     return <div className={styles.Home}>
-      <div>
+      <div className={styles.Header}>
        <Link active={this.props.filter === 'SHOW_ALL'} onClick={() => onClickLink('SHOW_ALL')}>全て</Link>{" "}
        <Link active={this.props.filter === 'SHOW_UNREAD'} onClick={() => onClickLink('SHOW_UNREAD')}>未読</Link>{" "}
        <Link active={this.props.filter === 'SHOW_READ'} onClick={() => onClickLink('SHOW_READ')}>既読</Link>
+       <button className={styles.ReloadButton} onClick={this.loadLinkedTweets.bind(this)}>reload</button>
       </div>
-      <button onClick={this.loadLinkedTweets.bind(this)}>reload</button>
       <ul>  
         {this.props.tweets.map((tweet, index) => {
           let linkUrl = tweet.text.match(urlRegex)[0];
           let date = moment(tweet.created_at);
-          let isRead = readTweets.includes(tweet.id.toString());
-          const readButton = isRead ? "" : <button onClick={this.markAsRead.bind(this)} value={tweet.id}>既読にする</button>;
+          let isRead = this.props.readTweets.includes(tweet.id.toString());
 
-          return (<li key={index}>
-              <p>{tweet.text}</p>
-              <p>{date.format("YYYY年 MM月DD日")}</p>
-              <a href={linkUrl} target="_blank">{linkUrl}</a>
-              {readButton}
+          return (<li className={styles.TweetLink} key={index}>
+              <a href={linkUrl} target="_blank">
+                {tweet.text + " - " + date.format("YYYY年 MM月DD日")}
+              </a>
+              { !isRead && <button onClick={this.markAsRead.bind(this)} value={tweet.id}>既読にする</button> }
             </li>
           )    
-        })}
+        }, this)}
       </ul>
     </div>
   }
