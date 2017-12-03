@@ -1,10 +1,11 @@
 /* @flow */
-import Axios from 'axios'
-import React from 'react'
-import styles from './styles.css'
+import Axios from 'axios';
+import React from 'react';
 import moment from 'moment';
 
 import { auth, database, twitterAuthProvider } from '../firebase';
+import { Link } from './common/Link';
+import styles from './styles.css';
 
 const addQueryParam = (url, params) => {
   url += "?";
@@ -28,26 +29,6 @@ const twitterQueryParamFactory = (key, secret, url) => {
 const readTweetsRef = database.ref('read-tweets/');
 const twitterAPIUrl = "https://us-central1-hello-firebase-26b50.cloudfunctions.net/execute";
 const urlRegex = new RegExp(/(https?:\/\/\S+)/g); 
-
-const Link = ({
-  active,
-  children,
-  onClick
-}) => {
-  if(active){
-    return <span>{children}</span>;
-  }
-  return (
-    <a href="#"
-      onClick={e => {
-        e.preventDefault();
-        onClick();
-      }}
-    >
-      {children}
-    </a>
-  )
-}
 
 export default class Home extends React.Component {
 
