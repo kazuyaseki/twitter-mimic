@@ -6,25 +6,7 @@ import moment from 'moment';
 import { auth, database, twitterAuthProvider } from '../firebase';
 import { Link } from './common/Link';
 import styles from './styles.css';
-
-const addQueryParam = (url, params) => {
-  url += "?";
-  let param_strs = [];
-  for(let key in params){
-    param_strs.push( key + "=" + params[key] );
-  }
-  url += param_strs.join("&");
-  
-  return url;
-}
-
-const twitterQueryParamFactory = (key, secret, url) => {
-  return {
-    key,
-    secret,
-    url
-  }
-}
+import { queryParamUtils, sortUtils } from '../utils'
 
 const readTweetsRef = database.ref('read-tweets/');
 const twitterAPIUrl = "https://us-central1-hello-firebase-26b50.cloudfunctions.net/execute";
@@ -65,22 +47,12 @@ export default class Home extends React.Component {
     let tokens = JSON.parse(localStorage.getItem("twitter:tokens"));
     let self = this;
     Axios.all([
-      Axios.get(addQueryParam(twitterAPIUrl, twitterQueryParamFactory(tokens.token, tokens.secret, 'favorites/list'))),
-      Axios.get(addQueryParam(twitterAPIUrl, twitterQueryParamFactory(tokens.token, tokens.secret, 'statuses/user_timeline')))
+      Axios.get(queryParamUtils.addQueryParam(twitterAPIUrl, queryParamUtils.twitterQueryParamFactory(tokens.token, tokens.secret, 'favorites/list'))),
+      Axios.get(queryParamUtils.addQueryParam(twitterAPIUrl, queryParamUtils.twitterQueryParamFactory(tokens.token, tokens.secret, 'statuses/user_timeline')))
     ]).then(function (response) {
       let newTweets = response[0].data.concat(response[1].data)
         .filter((tweet) => {return tweet.text.match(urlRegex)})
-        .sort((a, b) => {
-          let aDate = new Date(a.created_at);
-          let bDate = new Date(b.created_at);
-
-          if(aDate.getTime() > bDate.getTime())
-            return -1;
-          else if(bDate.getTime() > aDate.getTime())
-            return 1;
-          else
-            return 0;
-        });
+        .sort(sortUtils.sortTweetsByCreationDate);
       self.props.updateTweets(newTweets);
     })
   }
