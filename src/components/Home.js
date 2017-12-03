@@ -2,10 +2,11 @@
 import Axios from 'axios';
 import React from 'react';
 import moment from 'moment';
+import styles from './styles.css';
 
 import { auth, database, twitterAuthProvider } from '../firebase';
 import { Link } from './common/Link';
-import styles from './styles.css';
+import { twitterTokenStorage } from '../storageManager'
 import { queryParamUtils, sortUtils } from '../utils'
 
 const readTweetsRef = database.ref('read-tweets/');
@@ -20,17 +21,9 @@ export default class Home extends React.Component {
       if (user) {
         loadLinkedTweets();
       } else {
-        auth.signInWithPopup(twitterAuthProvider).then(function(result) {
-          var token = result.credential.accessToken;
-          var secret = result.credential.secret;
-
-          localStorage.setItem("twitter:tokens", JSON.stringify({
-            token,
-            secret
-          }))
-      
+        auth.signInWithPopup(twitterAuthProvider).then((result) => {
+          twitterTokenStorage.setCredentials(result.credential.accessToken, result.credential.secret);
           loadLinkedTweets();
-      
         }).catch(function(error) {
           console.log(error);
         });
@@ -38,13 +31,13 @@ export default class Home extends React.Component {
     });
 
     const props = this.props;
-    readTweetsRef.on('value', function(snapshot) {
+    readTweetsRef.on('value', (snapshot) => {
       props.updateReadTweets(snapshot.val());
     });
   }
 
   loadLinkedTweets() {
-    let tokens = JSON.parse(localStorage.getItem("twitter:tokens"));
+    const tokens = twitterTokenStorage.getCredentials();
     let self = this;
     Axios.all([
       Axios.get(queryParamUtils.addQueryParam(twitterAPIUrl, queryParamUtils.twitterQueryParamFactory(tokens.token, tokens.secret, 'favorites/list'))),
@@ -57,20 +50,6 @@ export default class Home extends React.Component {
     })
   }
 
-  signIn() {
-    auth.signInWithPopup(twitterAuthProvider).then(function(result) {
-      let token = result.credential.accessToken;
-      let secret = result.credential.secret;
-
-      localStorage.setItem("twitter:tokens", JSON.stringify({
-        token,
-        secret
-      }))  
-    }).catch(function(error) {
-      console.log(error);
-    });
-  }
-
   markAsRead(e) {
     const readTweets = this.props.readTweets;
     readTweets.push(e.target.value);
@@ -80,7 +59,7 @@ export default class Home extends React.Component {
   render (){
     const onClickLink = (filter) => {
       this.props.setVisibilityFilter(filter);
-    }
+    };
     const readTweets = this.props.readTweets;
 
     return <div className={styles.Home}>
@@ -95,7 +74,6 @@ export default class Home extends React.Component {
           let linkUrl = tweet.text.match(urlRegex)[0];
           let date = moment(tweet.created_at);
           let isRead = readTweets.includes(tweet.id.toString());
-
           const readButton = isRead ? "" : <button onClick={this.markAsRead.bind(this)} value={tweet.id}>既読にする</button>;
 
           return (<li key={index}>
